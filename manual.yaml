@@ -1,0 +1,92 @@
+port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+unified-delay: true
+global-client-fingerprint: chrome
+dns:
+  enable: true
+  listen: 53
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+  - 223.5.5.5
+  - 8.8.8.8
+  nameserver:
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
+  fallback:
+  - https://1.0.0.1/dns-query
+  - tls://dns.google
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+    - 240.0.0.0/4
+proxies:
+- name: 节点1
+  type: ss
+  server: 2602:294:0:b7:1234:1234:db26:0001
+  port: 2080
+  cipher: aes-256-gcm
+  password: pYBHqWpzIY2nl9B38bTvMKqiQD703IfATRoRVc2SSmw=
+  plugin: v2ray-plugin
+  plugin-opts:
+    mode: websocket
+- name: 节点2
+  type: ss
+  server: csgo.com
+  port: 8080
+  cipher: aes-256-gcm
+  password: pYBHqWpzIY2nl9B38bTvMKqiQD703IfATRoRVc2SSmw=
+  plugin: v2ray-plugin
+  plugin-opts:
+    mode: websocket
+    path: /marco
+    host: ss.marcol.top
+
+- name: 节点3
+  type: ss
+  server: www.visa.com.sg
+  port: 8880
+  cipher: aes-256-gcm
+  password: pYBHqWpzIY2nl9B38bTvMKqiQD703IfATRoRVc2SSmw=
+  plugin: v2ray-plugin
+  plugin-opts:
+    mode: websocket
+    path: /marco
+    host: ss.marcol.top
+
+proxy-groups:
+- name: 节点选择
+  type: select
+  proxies: 
+  - 自动选择
+  - DIRECT
+
+- name: 自动选择
+  type: url-test
+  url: https://www.google.com/generate_204
+  interval: 300
+  tolerance: 50
+  proxies: 
+  - 节点1
+  - 节点2
+  - 节点3
+
+- name: 手动选择
+  type: select
+  url: http://www.gstatic.com/generate_204
+  proxies:
+  - 节点1
+  - 节点2
+  - 节点3
+
+rules:
+- DOMAIN,clash.razord.top,DIRECT
+- DOMAIN,yacd.haishan.me,DIRECT
+- GEOIP,LAN,DIRECT
+- GEOIP,CN,DIRECT
+- MATCH,节点选择
+    
